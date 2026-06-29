@@ -190,6 +190,7 @@
       .process-step{border-right:none;border-bottom:1px solid #e0dbd4;padding:28px 0;}
     }
   </style>
+  <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
 </head>
 <body>
 
@@ -506,6 +507,17 @@ document.addEventListener('click', (e) => {
     hamburger.setAttribute('aria-expanded','false');
   }
 });
+</script>
+  <script>
+  if (window.netlifyIdentity) {
+    window.netlifyIdentity.on('init', user => {
+      if (!user) {
+        window.netlifyIdentity.on('login', () => {
+          document.location.href = '/admin/';
+        });
+      }
+    });
+  }
 </script>
 </body>
 </html>
