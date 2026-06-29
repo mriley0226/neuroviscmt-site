@@ -1,0 +1,136 @@
+{
+  "site": {
+    "phone": "(703) 625-6385",
+    "phone_link": "+17036256385",
+    "email": "fspampinato@neuroviscmt.com",
+    "booking_url": "https://neuroviscmt.com/schedule-a-session/"
+  },
+  "about": {
+    "name": "Dr. Francis C. Spampinato",
+    "title": "Founder & Lead Coach, NeuroVis CMT",
+    "headline": "A coach who has actually done the work.",
+    "bio_1": "Before founding NeuroVis CMT, Dr. Francis Spampinato served as a Senior Executive in the Federal Government for over a decade \u2014 leading teams at the Department of Energy, FAA, FEMA, the Small Business Administration, and the CIA. He managed budgets ranging from $4 billion to $23 billion and oversaw organizations of 200+ professionals.",
+    "bio_2": "He didn't leave to teach theory. He left to help the people he used to work alongside \u2014 talented mid-level professionals who keep getting passed over, not because they lack ability, but because no one has taught them how their brain actually works under pressure.",
+    "credentials": [
+      "Certified Brain-Based Coach \u2014 NeuroLeadership Institute",
+      "Maxwell Leadership Certified Team Member",
+      "J.D., Catholic University, Columbus School of Law",
+      "DPA/MPA, University of Southern California",
+      "Certificate in Supply Chain Management, Penn State",
+      "Former SES \u2014 DHS/FEMA, FAA, DOE, SBA, CIA",
+      "National Contract Management Assoc. \u2014 Certified Professional",
+      "Congressional testimony, senior executive leadership"
+    ]
+  },
+  "pricing": [
+    {
+      "sessions": "3 Sessions",
+      "price": "$1,499",
+      "timeframe": "over 6 weeks",
+      "featured": false
+    },
+    {
+      "sessions": "6 Sessions",
+      "price": "$2,699",
+      "timeframe": "over 12 weeks",
+      "featured": true
+    },
+    {
+      "sessions": "12 Sessions",
+      "price": "$4,799",
+      "timeframe": "over 24 weeks",
+      "featured": false
+    },
+    {
+      "sessions": "Flexible",
+      "price": "Custom",
+      "timeframe": "tailored to you",
+      "featured": false
+    }
+  ],
+  "leadership": {
+    "title": "Leadership Training for Teams",
+    "description": "Brain-based leadership development for groups of up to 25 participants. Ideal for organizational training days, off-sites, and professional development programs.",
+    "price": "$1,799",
+    "unit": "/ day"
+  },
+  "testimonials": [
+    {
+      "quote": "Working with NeuroVis CMT changed how I approach every decision at work. I finally understand why I was stuck \u2014 and how to move forward with confidence.",
+      "name": "Alex R.",
+      "role": "Senior Manager, Tech Industry",
+      "initial": "A"
+    },
+    {
+      "quote": "I was skeptical about coaching, but the neuroscience angle won me over. Francis explains everything in a way that actually makes sense \u2014 and the results speak for themselves.",
+      "name": "Maria T.",
+      "role": "Entrepreneur & Founder",
+      "initial": "M"
+    },
+    {
+      "quote": "I landed a promotion within 4 months of starting. The strategies Francis gave me rewired how I show up as a leader \u2014 it's not just coaching, it's a complete mindset shift.",
+      "name": "James K.",
+      "role": "Director of Operations",
+      "initial": "J"
+    }
+  ],
+  "faq": [
+    {
+      "question": "How is this different from regular coaching or consulting?",
+      "answer": "Most consultants hand you a framework and leave. Most coaches ask questions and hope the answers surface. NeuroVis CMT does neither. Every strategy Francis uses is grounded in how your brain actually processes information, makes decisions, and forms habits \u2014 then applied directly to your specific situation and goals. You won't walk away with a generic playbook. You'll walk away understanding why you've been stuck, and with a personalized plan that works with your neurology, not against it."
+    },
+    {
+      "question": "Who is this coaching for?",
+      "answer": "NeuroVis CMT is built for mid-level professionals who are performing well but aren't advancing the way their ability suggests they should. You're competent, often recognized for your work \u2014 but something is blocking the next step. It might be how you show up under pressure, how you're perceived by leadership, how you make decisions, or simply a pattern you can't yet name. Francis also works with career changers navigating major transitions, and with organizations seeking leadership development for teams of up to 25 people."
+    },
+    {
+      "question": "What does a typical session look like?",
+      "answer": "Sessions are conducted via Zoom, one-on-one with Francis. They're structured but conversational \u2014 part assessment, part strategy, part accountability. Afterward, you'll have specific actions tied to your goals and your brain's particular patterns. No two sessions are identical because no two clients are. Francis adapts the approach in real time based on what's surfacing for you."
+    },
+    {
+      "question": "Which package should I start with?",
+      "answer": "The 6-session package is where most clients start. Three sessions is enough to surface patterns and build awareness, but six gives you the time to act on what you discover and begin rewiring \u2014 which is where real results live. Twelve sessions is for clients with a bigger transition ahead or those who want to go deep across multiple areas. If you're genuinely unsure, start with the discovery call. Francis will tell you honestly which package fits your situation."
+    },
+    {
+      "question": "What if it's not the right fit?",
+      "answer": "Francis offers a full refund policy. If after beginning the program you feel it isn't the right fit, you're not locked in. The goal is a coaching relationship that actually works \u2014 not one that continues out of obligation. This means the discovery call is genuinely pressure-free. It's a conversation, not a sales pitch."
+    }
+  ],
+  "research": [
+    {
+      "category": "Career Plateaus",
+      "title": "The Neuroscience Behind Breaking Career Plateaus",
+      "url": "https://neuroviscmt.com/the-neuroscience-behind-breaking-career-plateaus/",
+      "pull_quote": "Feeling stuck isn't a character flaw. It's a neural pattern \u2014 and neural patterns can be changed.",
+      "summary": "By age 32, brain architecture stabilizes \u2014 and most workplaces reinforce that stagnation through routine, KPIs, and risk aversion. Only 31% of U.S. employees feel engaged. The good news: neuroplasticity means your brain is never truly fixed. With the right challenges and strategies, you can pave new pathways and reignite the growth that's been dormant."
+    },
+    {
+      "category": "Neuroplasticity & Leadership",
+      "title": "5 Ways Neuroplasticity Transforms Your Leadership",
+      "url": "https://neuroviscmt.com/5-surprising-ways-neuroplasticity-can-transform-your-leadership-journey/",
+      "pull_quote": "71% of employers now prioritize emotional intelligence over technical skills for promotions. Most people have never been taught how to build it.",
+      "summary": "AI, hybrid teams, and an always-on marketplace have made adaptability the defining leadership skill. Neuroplasticity is the mechanism \u2014 and it can be trained deliberately. From emotional intelligence to decision-making speed to habits that actually hold, this piece breaks down five areas where the science delivers measurable change."
+    },
+    {
+      "category": "Career Confidence",
+      "title": "Rewiring Your Brain for Career Confidence",
+      "url": "https://neuroviscmt.com/step-by-step-guide-to-rewiring-your-brain-for-career-confidence/",
+      "pull_quote": "A mid-level analyst who struggled in meetings rewired her stress response in 8 weeks \u2014 and was promoted for her commanding presence.",
+      "summary": "85% of professionals say confidence is the single biggest driver of career success \u2014 yet most people treat it as something you either have or you don't. Neuroscience disagrees. Research shows adults can strengthen confidence-related neural connections in just six weeks of targeted practice."
+    },
+    {
+      "category": "Emotional Intelligence",
+      "title": "Why EQ Training Must Include Neuroscience",
+      "url": "https://neuroviscmt.com/why-emotional-intelligence-training-must-include-neuroscience-insights/",
+      "pull_quote": "Organizations that pair EQ training with neuroscience report 25% higher productivity and retain 70% of top performers for 5+ years.",
+      "summary": "Standard EQ training fails because it treats emotions as behavioral outputs \u2014 not as neurological events. Harvard research shows mindfulness practiced for just 8 weeks increases gray matter density in the regions that govern emotional regulation. This isn't self-help. It's applied neuroscience \u2014 and it produces results you can measure."
+    },
+    {
+      "category": "Self-Doubt & Career Transitions",
+      "title": "Overcoming Self-Doubt: Brain-Based Strategies for Career Changers",
+      "url": "https://neuroviscmt.com/overcoming-self-doubt-practical-brain-based-strategies-for-career-changers/",
+      "pull_quote": "Clients improve decision-making speed by 30% in 3 months \u2014 not because they got smarter, but because they got out of their own way.",
+      "summary": "54% of U.S. workers say job insecurity raises their stress levels. For career changers, that cortisol spike can make the amygdala scream danger at the exact moments that require courage. This article walks through the neural mechanics of self-doubt \u2014 and the specific, research-backed strategies that interrupt the cycle."
+    }
+  ]
+}
