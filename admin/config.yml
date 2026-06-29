@@ -1,0 +1,83 @@
+backend:
+  name: git-gateway
+  branch: main
+
+media_folder: "images"
+public_folder: "/images"
+
+collections:
+  - name: "site"
+    label: "Site Settings"
+    files:
+      - name: "content"
+        label: "All Site Content"
+        file: "content.json"
+        format: json
+        fields:
+
+          - label: "Contact & Site Info"
+            name: "site"
+            widget: "object"
+            fields:
+              - { label: "Phone (display)", name: "phone", widget: "string", hint: "e.g. (703) 625-6385" }
+              - { label: "Phone (link, no spaces)", name: "phone_link", widget: "string", hint: "e.g. +17036256385" }
+              - { label: "Email", name: "email", widget: "string" }
+              - { label: "Booking URL", name: "booking_url", widget: "string", hint: "Full URL to your scheduling page" }
+
+          - label: "About Francis"
+            name: "about"
+            widget: "object"
+            fields:
+              - { label: "Full Name", name: "name", widget: "string" }
+              - { label: "Title / Role", name: "title", widget: "string" }
+              - { label: "Section Headline", name: "headline", widget: "string" }
+              - { label: "Bio Paragraph 1", name: "bio_1", widget: "text" }
+              - { label: "Bio Paragraph 2", name: "bio_2", widget: "text" }
+              - label: "Credentials List"
+                name: "credentials"
+                widget: "list"
+                field: { label: "Credential", name: "credential", widget: "string" }
+
+          - label: "Pricing Packages"
+            name: "pricing"
+            widget: "list"
+            fields:
+              - { label: "Sessions Label", name: "sessions", widget: "string", hint: "e.g. 6 Sessions" }
+              - { label: "Price", name: "price", widget: "string", hint: "e.g. $2,699" }
+              - { label: "Timeframe", name: "timeframe", widget: "string", hint: "e.g. over 12 weeks" }
+              - { label: "Featured (highlighted in blue)?", name: "featured", widget: "boolean", default: false }
+
+          - label: "Leadership Training Card"
+            name: "leadership"
+            widget: "object"
+            fields:
+              - { label: "Title", name: "title", widget: "string" }
+              - { label: "Description", name: "description", widget: "text" }
+              - { label: "Price", name: "price", widget: "string", hint: "e.g. $1,799" }
+              - { label: "Unit", name: "unit", widget: "string", hint: "e.g. / day" }
+
+          - label: "Testimonials"
+            name: "testimonials"
+            widget: "list"
+            fields:
+              - { label: "Quote", name: "quote", widget: "text" }
+              - { label: "Client Name", name: "name", widget: "string" }
+              - { label: "Client Role / Company", name: "role", widget: "string" }
+              - { label: "Initial (shown in avatar circle)", name: "initial", widget: "string", hint: "Single letter, e.g. A" }
+
+          - label: "FAQ"
+            name: "faq"
+            widget: "list"
+            fields:
+              - { label: "Question", name: "question", widget: "string" }
+              - { label: "Answer", name: "answer", widget: "text" }
+
+          - label: "Research Article Summaries"
+            name: "research"
+            widget: "list"
+            fields:
+              - { label: "Category Tag", name: "category", widget: "string", hint: "e.g. Career Plateaus" }
+              - { label: "Article Title", name: "title", widget: "string" }
+              - { label: "Full Article URL", name: "url", widget: "string" }
+              - { label: "Pull Quote", name: "pull_quote", widget: "text", hint: "The italic quote shown prominently" }
+              - { label: "Summary Paragraph", name: "summary", widget: "text" }
