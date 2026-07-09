@@ -358,6 +358,7 @@
     <h2 style="font-family:var(--font-serif);font-size:clamp(1.8rem,3vw,2.4rem);font-weight:normal;color:#1a1a1a;line-height:1.2;margin-bottom:12px;">Send Francis a question instead.</h2>
     <p style="font-size:1rem;color:#3d3d3d;line-height:1.7;margin-bottom:32px;">He reads and answers every message personally — usually within a business day.</p>
     <form name="contact" method="POST" data-netlify="true" netlify-honeypot="bot-field" action="/thanks.html">
+      <input type="hidden" name="form-name" value="contact" />
       <p style="display:none;"><label>Don't fill this out: <input name="bot-field" /></label></p>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;">
         <div>
