@@ -37,6 +37,7 @@ collections:
                 name: "credentials"
                 widget: "list"
                 field: { label: "Credential", name: "credential", widget: "string" }
+              - { label: "Photo / Headshot", name: "photo", widget: "image", required: false, hint: "Click to upload a new headshot (JPG or PNG). Leave as-is to keep the current photo." }
 
           - label: "Pricing Packages"
             name: "pricing"
