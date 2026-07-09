@@ -1,0 +1,22 @@
+# ── Old WordPress URLs → new site (301 preserves SEO equity) ──
+/brain-based-research/    /research.html   301
+/brain-based-research     /research.html   301
+/neuroviscmt-research.html /research.html  301
+/services/                /#services       301
+/services                 /#services       301
+/contact/                 /#contact        301
+/contact                  /#contact        301
+/about/                   /#about          301
+/about                    /#about          301
+
+# Old article URLs → research page
+/the-neuroscience-behind-breaking-career-plateaus/                          /research.html 301
+/5-surprising-ways-neuroplasticity-can-transform-your-leadership-journey/   /research.html 301
+/step-by-step-guide-to-rewiring-your-brain-for-career-confidence/           /research.html 301
+/why-emotional-intelligence-training-must-include-neuroscience-insights/    /research.html 301
+/overcoming-self-doubt-practical-brain-based-strategies-for-career-changers/ /research.html 301
+
+# Booking safety net: until Calendly is live, old scheduler URL lands on contact
+# (302 = temporary, so browsers don't cache it; replace/remove after Calendly swap)
+/schedule-a-session/      /#contact        302
+/schedule-a-session       /#contact        302

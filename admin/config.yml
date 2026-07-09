@@ -81,3 +81,10 @@ collections:
               - { label: "Full Article URL", name: "url", widget: "string" }
               - { label: "Pull Quote", name: "pull_quote", widget: "text", hint: "The italic quote shown prominently" }
               - { label: "Summary Paragraph", name: "summary", widget: "text" }
+              - label: "Source Links"
+                name: "sources"
+                widget: "list"
+                required: false
+                fields:
+                  - { label: "Source Name", name: "label", widget: "string" }
+                  - { label: "Source URL", name: "url", widget: "string" }

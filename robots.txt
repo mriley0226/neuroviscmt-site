@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /crm.html
+
+Sitemap: https://neuroviscmt.com/sitemap.xml

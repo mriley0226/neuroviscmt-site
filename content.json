@@ -102,35 +102,113 @@
       "title": "The Neuroscience Behind Breaking Career Plateaus",
       "url": "https://neuroviscmt.com/the-neuroscience-behind-breaking-career-plateaus/",
       "pull_quote": "Feeling stuck isn't a character flaw. It's a neural pattern \u2014 and neural patterns can be changed.",
-      "summary": "By age 32, brain architecture stabilizes \u2014 and most workplaces reinforce that stagnation through routine, KPIs, and risk aversion. Only 31% of U.S. employees feel engaged. The good news: neuroplasticity means your brain is never truly fixed. With the right challenges and strategies, you can pave new pathways and reignite the growth that's been dormant."
+      "summary": "By age 32, brain architecture stabilizes \u2014 and most workplaces reinforce that stagnation through routine, KPIs, and risk aversion. Only 31% of U.S. employees feel engaged. The good news: neuroplasticity means your brain is never truly fixed. With the right challenges and strategies, you can pave new pathways and reignite the growth that's been dormant.",
+      "sources": [
+        {
+          "label": "Economic Times HR \u2014 Career Stagnation",
+          "url": "https://hrme.economictimes.indiatimes.com"
+        },
+        {
+          "label": "Skillsoft \u2014 Future of Work 2025",
+          "url": "https://www.skillsoft.com"
+        },
+        {
+          "label": "QMENTA \u2014 Neuroscience Trends",
+          "url": "https://www.qmenta.com"
+        },
+        {
+          "label": "MindfulCareer \u2014 Job Market 2025",
+          "url": "https://mindfulcareer.com"
+        }
+      ]
     },
     {
       "category": "Neuroplasticity & Leadership",
       "title": "5 Ways Neuroplasticity Transforms Your Leadership",
       "url": "https://neuroviscmt.com/5-surprising-ways-neuroplasticity-can-transform-your-leadership-journey/",
       "pull_quote": "71% of employers now prioritize emotional intelligence over technical skills for promotions. Most people have never been taught how to build it.",
-      "summary": "AI, hybrid teams, and an always-on marketplace have made adaptability the defining leadership skill. Neuroplasticity is the mechanism \u2014 and it can be trained deliberately. From emotional intelligence to decision-making speed to habits that actually hold, this piece breaks down five areas where the science delivers measurable change."
+      "summary": "AI, hybrid teams, and an always-on marketplace have made adaptability the defining leadership skill. Neuroplasticity is the mechanism \u2014 and it can be trained deliberately. From emotional intelligence to decision-making speed to habits that actually hold, this piece breaks down five areas where the science delivers measurable change.",
+      "sources": [
+        {
+          "label": "TalentSmart \u2014 EQ & Job Performance",
+          "url": "https://www.talentsmart.com"
+        },
+        {
+          "label": "Gartner \u2014 Automation by 2025",
+          "url": "https://www.gartner.com"
+        }
+      ]
     },
     {
       "category": "Career Confidence",
       "title": "Rewiring Your Brain for Career Confidence",
       "url": "https://neuroviscmt.com/step-by-step-guide-to-rewiring-your-brain-for-career-confidence/",
       "pull_quote": "A mid-level analyst who struggled in meetings rewired her stress response in 8 weeks \u2014 and was promoted for her commanding presence.",
-      "summary": "85% of professionals say confidence is the single biggest driver of career success \u2014 yet most people treat it as something you either have or you don't. Neuroscience disagrees. Research shows adults can strengthen confidence-related neural connections in just six weeks of targeted practice."
+      "summary": "85% of professionals say confidence is the single biggest driver of career success \u2014 yet most people treat it as something you either have or you don't. Neuroscience disagrees. Research shows adults can strengthen confidence-related neural connections in just six weeks of targeted practice.",
+      "sources": [
+        {
+          "label": "Mayo Clinic \u2014 Brain Health",
+          "url": "https://www.mayoclinic.org"
+        },
+        {
+          "label": "Training Magazine \u2014 Workplace Learning",
+          "url": "https://trainingmag.com"
+        },
+        {
+          "label": "Resilience-i \u2014 Resilience Strategies",
+          "url": "https://resiliencei.com"
+        }
+      ]
     },
     {
       "category": "Emotional Intelligence",
       "title": "Why EQ Training Must Include Neuroscience",
       "url": "https://neuroviscmt.com/why-emotional-intelligence-training-must-include-neuroscience-insights/",
       "pull_quote": "Organizations that pair EQ training with neuroscience report 25% higher productivity and retain 70% of top performers for 5+ years.",
-      "summary": "Standard EQ training fails because it treats emotions as behavioral outputs \u2014 not as neurological events. Harvard research shows mindfulness practiced for just 8 weeks increases gray matter density in the regions that govern emotional regulation. This isn't self-help. It's applied neuroscience \u2014 and it produces results you can measure."
+      "summary": "Standard EQ training fails because it treats emotions as behavioral outputs \u2014 not as neurological events. Harvard research shows mindfulness practiced for just 8 weeks increases gray matter density in the regions that govern emotional regulation. This isn't self-help. It's applied neuroscience \u2014 and it produces results you can measure.",
+      "sources": [
+        {
+          "label": "Harvard \u2014 EQ in the Workplace",
+          "url": "https://news.harvard.edu"
+        },
+        {
+          "label": "TalentSmartEQ \u2014 2025 EQ Report",
+          "url": "https://www.talentsmarteq.com"
+        },
+        {
+          "label": "GM Insights \u2014 Emotion AI Market",
+          "url": "https://www.gminsights.com"
+        },
+        {
+          "label": "Metiss Group \u2014 EQ Trends 2025",
+          "url": "https://metissgroup.com"
+        }
+      ]
     },
     {
       "category": "Self-Doubt & Career Transitions",
       "title": "Overcoming Self-Doubt: Brain-Based Strategies for Career Changers",
       "url": "https://neuroviscmt.com/overcoming-self-doubt-practical-brain-based-strategies-for-career-changers/",
       "pull_quote": "Clients improve decision-making speed by 30% in 3 months \u2014 not because they got smarter, but because they got out of their own way.",
-      "summary": "54% of U.S. workers say job insecurity raises their stress levels. For career changers, that cortisol spike can make the amygdala scream danger at the exact moments that require courage. This article walks through the neural mechanics of self-doubt \u2014 and the specific, research-backed strategies that interrupt the cycle."
+      "summary": "54% of U.S. workers say job insecurity raises their stress levels. For career changers, that cortisol spike can make the amygdala scream danger at the exact moments that require courage. This article walks through the neural mechanics of self-doubt \u2014 and the specific, research-backed strategies that interrupt the cycle.",
+      "sources": [
+        {
+          "label": "APA \u2014 Job Insecurity & Stress",
+          "url": "https://www.apa.org"
+        },
+        {
+          "label": "Career Ahead \u2014 Neuroscience & Confidence",
+          "url": "https://careerahead.com"
+        },
+        {
+          "label": "NAMI \u2014 2025 Workplace Mental Health",
+          "url": "https://www.nami.org"
+        },
+        {
+          "label": "TherapyRoute \u2014 Mindfulness Statistics",
+          "url": "https://www.therapyroute.com"
+        }
+      ]
     }
   ]
 }
