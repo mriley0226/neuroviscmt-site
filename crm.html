@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="color-scheme" content="light" />
+<meta name="robots" content="noindex" />
+<title>NeuroVis CMT | Practice Manager</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  :root{
+    --ink:#1a1a1a;--body:#3d3d3d;--muted:#777;
+    --cream:#f9f7f4;--warm:#f4f0eb;--rule:#e0dbd4;
+    --navy:#2a4a6e;--navy-l:#3d6b9e;--gold:#b5873a;
+    --green:#2d7d46;--red:#a04040;
+    --serif:Georgia,"Times New Roman",serif;
+    --sans:"Segoe UI",system-ui,-apple-system,sans-serif;
+  }
+  html,body{color-scheme:light;font-family:var(--sans);background:var(--cream);color:var(--body);font-size:15px;line-height:1.55;height:100%;}
+  a{color:inherit;text-decoration:none;}
+  button{font-family:var(--sans);cursor:pointer;}
+
+  /* ── LOGIN ─────────────────────────────── */
+  .login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background:var(--cream);}
+  .login-card{background:#fff;border:1px solid var(--rule);border-radius:6px;padding:48px 44px;width:100%;max-width:400px;box-shadow:0 10px 40px rgba(26,26,26,.06);}
+  .login-logo{font-family:var(--serif);font-size:1.4rem;color:var(--ink);margin-bottom:4px;}
+  .login-logo strong{color:var(--navy);}
+  .login-sub{font-size:.8rem;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:32px;}
+  .field{margin-bottom:16px;}
+  .field label{display:block;font-size:.74rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);margin-bottom:6px;}
+  .field input,.field select,.field textarea{width:100%;padding:11px 12px;border:1px solid var(--rule);border-radius:4px;font-family:var(--sans);font-size:.92rem;color:var(--ink);background:#fff;}
+  .field input:focus,.field select:focus,.field textarea:focus{outline:2px solid var(--navy);outline-offset:0;border-color:var(--navy);}
+  .field textarea{resize:vertical;min-height:80px;}
+  .btn{display:inline-block;background:var(--navy);color:#fff;border:none;padding:12px 26px;border-radius:4px;font-size:.9rem;font-weight:600;transition:background .15s;}
+  .btn:hover{background:var(--navy-l);}
+  .btn-full{width:100%;}
+  .btn-ghost{background:none;border:1.5px solid var(--rule);color:var(--body);}
+  .btn-ghost:hover{background:var(--warm);border-color:var(--navy);color:var(--navy);}
+  .btn-danger{background:none;border:none;color:var(--red);font-size:.8rem;padding:6px 0;}
+  .login-error{color:var(--red);font-size:.85rem;margin-top:12px;min-height:1.2em;}
+
+  /* ── APP SHELL ─────────────────────────── */
+  .app{display:none;min-height:100vh;}
+  .app.active{display:grid;grid-template-columns:220px 1fr;}
+  .sidebar{background:var(--ink);color:rgba(255,255,255,.75);padding:28px 0;display:flex;flex-direction:column;position:sticky;top:0;height:100vh;}
+  .side-logo{font-family:var(--serif);font-size:1.1rem;color:#fff;padding:0 24px 24px;border-bottom:1px solid rgba(255,255,255,.1);}
+  .side-logo strong{color:var(--gold);}
+  .side-nav{list-style:none;padding:16px 0;flex:1;}
+  .side-nav button{display:flex;align-items:center;gap:10px;width:100%;background:none;border:none;color:rgba(255,255,255,.7);font-size:.9rem;padding:12px 24px;text-align:left;transition:all .15s;border-left:3px solid transparent;}
+  .side-nav button:hover{color:#fff;background:rgba(255,255,255,.04);}
+  .side-nav button.active{color:#fff;border-left-color:var(--gold);background:rgba(255,255,255,.06);}
+  .side-foot{padding:16px 24px;border-top:1px solid rgba(255,255,255,.1);font-size:.78rem;}
+  .side-foot button{background:none;border:none;color:rgba(255,255,255,.5);font-size:.8rem;padding:0;}
+  .side-foot button:hover{color:#fff;}
+
+  .main{padding:36px 40px;max-width:1200px;}
+  .page-title{font-family:var(--serif);font-size:1.7rem;font-weight:normal;color:var(--ink);margin-bottom:4px;}
+  .page-sub{font-size:.85rem;color:var(--muted);margin-bottom:28px;}
+  .page-head-row{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:8px;}
+
+  /* ── DASHBOARD ─────────────────────────── */
+  .glance{background:var(--navy);border-radius:6px;display:grid;grid-template-columns:repeat(4,1fr);gap:1px;overflow:hidden;margin-bottom:28px;}
+  .glance>div{background:var(--navy);padding:26px 24px;text-align:center;}
+  .glance>div+div{border-left:1px solid rgba(255,255,255,.14);}
+  .glance-num{font-family:var(--serif);font-size:2.3rem;color:#fff;line-height:1;}
+  .glance-label{font-size:.74rem;color:rgba(255,255,255,.75);margin-top:8px;letter-spacing:.05em;text-transform:uppercase;}
+
+  .dash-grid{display:grid;grid-template-columns:1.4fr 1fr;gap:20px;}
+  .card{background:#fff;border:1px solid var(--rule);border-radius:6px;padding:24px;}
+  .card h3{font-size:.76rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin-bottom:16px;}
+  .empty-note{font-size:.88rem;color:var(--muted);padding:16px 0;}
+
+  .recent-row{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:10px 0;border-bottom:1px solid var(--warm);font-size:.9rem;}
+  .recent-row:last-child{border-bottom:none;}
+  .recent-name{font-weight:600;color:var(--ink);}
+  .recent-meta{font-size:.78rem;color:var(--muted);white-space:nowrap;}
+
+  .pipe-sum-row{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--warm);font-size:.9rem;}
+  .pipe-sum-row:last-child{border-bottom:none;}
+  .pipe-count{font-family:var(--serif);font-size:1.2rem;color:var(--navy);}
+
+  /* ── STATUS BADGES ─────────────────────── */
+  .badge{display:inline-block;font-size:.7rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:3px 10px;border-radius:50px;border:1px solid;}
+  .badge.lead{color:var(--gold);border-color:var(--gold);background:rgba(181,135,58,.08);}
+  .badge.discovery{color:var(--navy);border-color:var(--navy);background:rgba(42,74,110,.07);}
+  .badge.active{color:var(--green);border-color:var(--green);background:rgba(45,125,70,.08);}
+  .badge.completed{color:#666;border-color:#bbb;background:#f2f2f2;}
+  .badge.lost{color:var(--red);border-color:var(--red);background:rgba(160,64,64,.06);}
+
+  /* ── PIPELINE BOARD ────────────────────── */
+  .board{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;align-items:start;}
+  .board-col{background:var(--warm);border:1px solid var(--rule);border-radius:6px;padding:14px;}
+  .board-col-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
+  .board-col-head span{font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--body);}
+  .board-col-count{font-family:var(--serif);color:var(--navy);font-size:1rem;}
+  .board-card{background:#fff;border:1px solid var(--rule);border-radius:5px;padding:14px;margin-bottom:10px;cursor:pointer;transition:border-color .15s,box-shadow .15s;}
+  .board-card:hover{border-color:var(--navy);box-shadow:0 3px 12px rgba(42,74,110,.09);}
+  .board-card:last-child{margin-bottom:0;}
+  .bc-name{font-weight:600;color:var(--ink);font-size:.92rem;margin-bottom:3px;}
+  .bc-meta{font-size:.76rem;color:var(--muted);}
+
+  /* ── CLIENTS TABLE ─────────────────────── */
+  .toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px;}
+  .toolbar input,.toolbar select{padding:10px 12px;border:1px solid var(--rule);border-radius:4px;font-size:.88rem;background:#fff;}
+  .toolbar input{flex:1;min-width:180px;}
+  table{width:100%;border-collapse:collapse;background:#fff;border:1px solid var(--rule);border-radius:6px;overflow:hidden;}
+  thead th{text-align:left;font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);background:var(--warm);padding:12px 16px;border-bottom:1px solid var(--rule);}
+  tbody td{padding:13px 16px;border-bottom:1px solid var(--warm);font-size:.9rem;vertical-align:middle;}
+  tbody tr{cursor:pointer;transition:background .12s;}
+  tbody tr:hover{background:var(--cream);}
+  tbody tr:last-child td{border-bottom:none;}
+  .td-name{font-weight:600;color:var(--ink);}
+  .td-muted{color:var(--muted);font-size:.82rem;}
+
+  /* ── DETAIL DRAWER / MODALS ────────────── */
+  .overlay{display:none;position:fixed;inset:0;background:rgba(26,26,26,.4);z-index:200;}
+  .overlay.open{display:block;}
+  .drawer{position:fixed;top:0;right:0;bottom:0;width:520px;max-width:95vw;background:#fff;z-index:210;transform:translateX(100%);transition:transform .25s ease;overflow-y:auto;box-shadow:-12px 0 40px rgba(0,0,0,.12);}
+  .drawer.open{transform:translateX(0);}
+  .drawer-head{position:sticky;top:0;background:#fff;border-bottom:1px solid var(--rule);padding:22px 28px;display:flex;justify-content:space-between;align-items:center;z-index:5;}
+  .drawer-head h2{font-family:var(--serif);font-size:1.25rem;font-weight:normal;color:var(--ink);}
+  .drawer-close{background:none;border:none;font-size:1.5rem;color:var(--muted);line-height:1;}
+  .drawer-close:hover{color:var(--ink);}
+  .drawer-body{padding:24px 28px 40px;}
+  .detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px 20px;margin-bottom:20px;}
+  .detail-item .dl{font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);}
+  .detail-item .dv{font-size:.92rem;color:var(--ink);margin-top:2px;}
+  .detail-notes{background:var(--warm);border-left:3px solid var(--gold);border-radius:0 4px 4px 0;padding:12px 16px;font-size:.88rem;margin-bottom:24px;white-space:pre-wrap;}
+  .drawer-actions{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:28px;}
+  .sect-label{font-size:.72rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin:24px 0 12px;padding-top:20px;border-top:1px solid var(--rule);}
+  .sess-item{border:1px solid var(--rule);border-radius:5px;padding:14px 16px;margin-bottom:10px;}
+  .sess-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px;}
+  .sess-date{font-weight:600;color:var(--ink);font-size:.88rem;}
+  .sess-num{font-size:.74rem;color:var(--navy);font-weight:700;}
+  .sess-notes{font-size:.86rem;color:var(--body);white-space:pre-wrap;}
+  .sess-next{font-size:.8rem;color:var(--gold);margin-top:6px;font-style:italic;}
+
+  .modal{position:fixed;top:50%;left:50%;transform:translate(-50%,-48%) scale(.98);opacity:0;pointer-events:none;background:#fff;border-radius:8px;width:480px;max-width:94vw;max-height:88vh;overflow-y:auto;z-index:220;transition:all .2s ease;box-shadow:0 24px 60px rgba(0,0,0,.2);}
+  .modal.open{transform:translate(-50%,-50%) scale(1);opacity:1;pointer-events:auto;}
+  .modal-head{padding:22px 28px 0;}
+  .modal-head h2{font-family:var(--serif);font-size:1.25rem;font-weight:normal;color:var(--ink);}
+  .modal-body{padding:20px 28px 28px;}
+  .modal-foot{display:flex;justify-content:flex-end;gap:10px;padding:0 28px 26px;}
+  .form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+
+  .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:12px 22px;border-radius:50px;font-size:.86rem;opacity:0;pointer-events:none;transition:all .25s;z-index:300;}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+  /* ── RESPONSIVE ────────────────────────── */
+  @media(max-width:900px){
+    .app.active{grid-template-columns:1fr;}
+    .sidebar{position:static;height:auto;flex-direction:row;align-items:center;padding:12px 16px;gap:4px;overflow-x:auto;}
+    .side-logo{padding:0 12px 0 0;border:none;white-space:nowrap;}
+    .side-nav{display:flex;padding:0;flex:1;}
+    .side-nav button{padding:10px 14px;border-left:none;border-bottom:3px solid transparent;white-space:nowrap;}
+    .side-nav button.active{border-bottom-color:var(--gold);}
+    .side-foot{border:none;padding:0 0 0 8px;}
+    .main{padding:24px 18px;}
+    .glance{grid-template-columns:1fr 1fr;}
+    .glance>div+div{border-left:none;}
+    .dash-grid{grid-template-columns:1fr;}
+    .board{grid-template-columns:1fr 1fr;}
+    .form-row{grid-template-columns:1fr;}
+  }
+  @media(max-width:560px){.board{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+
+<!-- ═══ LOGIN ═══════════════════════════════ -->
+<div class="login-wrap" id="loginView">
+  <div class="login-card">
+    <div class="login-logo">Neuro<strong>Vis</strong> CMT</div>
+    <div class="login-sub">Practice Manager</div>
+    <div class="field">
+      <label for="loginEmail">Email</label>
+      <input type="email" id="loginEmail" autocomplete="email" />
+    </div>
+    <div class="field">
+      <label for="loginPassword">Password</label>
+      <input type="password" id="loginPassword" autocomplete="current-password" />
+    </div>
+    <button class="btn btn-full" id="loginBtn">Sign in</button>
+    <p class="login-error" id="loginError"></p>
+  </div>
+</div>
+
+<!-- ═══ APP ═════════════════════════════════ -->
+<div class="app" id="appView">
+  <aside class="sidebar">
+    <div class="side-logo">Neuro<strong>Vis</strong></div>
+    <ul class="side-nav">
+      <li><button data-view="dashboard" class="active">Dashboard</button></li>
+      <li><button data-view="pipeline">Pipeline</button></li>
+      <li><button data-view="clients">Clients</button></li>
+    </ul>
+    <div class="side-foot">
+      <button id="logoutBtn">Sign out</button>
+    </div>
+  </aside>
+
+  <main class="main">
+
+    <!-- DASHBOARD -->
+    <section id="view-dashboard">
+      <h1 class="page-title">Your practice at a glance</h1>
+      <p class="page-sub" id="todayLine"></p>
+      <div class="glance">
+        <div><div class="glance-num" id="statActive">–</div><div class="glance-label">Active clients</div></div>
+        <div><div class="glance-num" id="statLeads">–</div><div class="glance-label">Leads to follow up</div></div>
+        <div><div class="glance-num" id="statSessions">–</div><div class="glance-label">Sessions this month</div></div>
+        <div><div class="glance-num" id="statTotal">–</div><div class="glance-label">Total clients</div></div>
+      </div>
+      <div class="dash-grid">
+        <div class="card">
+          <h3>Recent sessions</h3>
+          <div id="recentSessions"><p class="empty-note">No sessions logged yet. Open a client and add your first one.</p></div>
+        </div>
+        <div class="card">
+          <h3>Pipeline summary</h3>
+          <div id="pipeSummary"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PIPELINE -->
+    <section id="view-pipeline" style="display:none;">
+      <div class="page-head-row">
+        <div>
+          <h1 class="page-title">Pipeline</h1>
+          <p class="page-sub">Click any card to open the client.</p>
+        </div>
+        <button class="btn" onclick="openClientModal()">+ Add client</button>
+      </div>
+      <div class="board" id="board"></div>
+    </section>
+
+    <!-- CLIENTS -->
+    <section id="view-clients" style="display:none;">
+      <div class="page-head-row">
+        <div>
+          <h1 class="page-title">Clients</h1>
+          <p class="page-sub">Everyone Francis has ever talked to, in one place.</p>
+        </div>
+        <button class="btn" onclick="openClientModal()">+ Add client</button>
+      </div>
+      <div class="toolbar">
+        <input type="search" id="searchInput" placeholder="Search by name, email, or company…" />
+        <select id="statusFilter">
+          <option value="">All statuses</option>
+          <option value="lead">Lead</option>
+          <option value="discovery">Discovery</option>
+          <option value="active">Active</option>
+          <option value="completed">Completed</option>
+          <option value="lost">Lost</option>
+        </select>
+      </div>
+      <table>
+        <thead><tr><th>Name</th><th>Status</th><th>Package</th><th>Contact</th><th>Added</th></tr></thead>
+        <tbody id="clientRows"></tbody>
+      </table>
+      <p class="empty-note" id="clientsEmpty" style="display:none;">No clients yet — add the first one.</p>
+    </section>
+  </main>
+</div>
+
+<!-- ═══ CLIENT DETAIL DRAWER ════════════════ -->
+<div class="overlay" id="overlay" onclick="closeAll()"></div>
+<div class="drawer" id="drawer">
+  <div class="drawer-head">
+    <h2 id="drawerName"></h2>
+    <button class="drawer-close" onclick="closeAll()">×</button>
+  </div>
+  <div class="drawer-body">
+    <div class="detail-grid" id="drawerDetails"></div>
+    <div id="drawerNotesWrap"></div>
+    <div class="drawer-actions">
+      <button class="btn" onclick="openSessionModal()">+ Log session</button>
+      <button class="btn-ghost btn" onclick="openClientModal(currentClient)">Edit client</button>
+      <button class="btn-danger" onclick="deleteClient()">Delete client</button>
+    </div>
+    <div class="sect-label">Session history</div>
+    <div id="sessionList"></div>
+  </div>
+</div>
+
+<!-- ═══ CLIENT MODAL ════════════════════════ -->
+<div class="modal" id="clientModal">
+  <div class="modal-head"><h2 id="clientModalTitle">Add client</h2></div>
+  <div class="modal-body">
+    <div class="field"><label>Name *</label><input id="cName" /></div>
+    <div class="form-row">
+      <div class="field"><label>Email</label><input id="cEmail" type="email" /></div>
+      <div class="field"><label>Phone</label><input id="cPhone" /></div>
+    </div>
+    <div class="field"><label>Company / Role</label><input id="cCompany" /></div>
+    <div class="form-row">
+      <div class="field"><label>Status</label>
+        <select id="cStatus">
+          <option value="lead">Lead</option>
+          <option value="discovery">Discovery</option>
+          <option value="active">Active</option>
+          <option value="completed">Completed</option>
+          <option value="lost">Lost</option>
+        </select>
+      </div>
+      <div class="field"><label>Package</label>
+        <select id="cPackage">
+          <option value="">— None yet —</option>
+          <option>3 Sessions</option>
+          <option>6 Sessions</option>
+          <option>12 Sessions</option>
+          <option>Custom</option>
+          <option>Leadership Training</option>
+        </select>
+      </div>
+    </div>
+    <div class="field"><label>Source (how they found Francis)</label><input id="cSource" placeholder="Referral, LinkedIn, website…" /></div>
+    <div class="field"><label>Notes</label><textarea id="cNotes"></textarea></div>
+  </div>
+  <div class="modal-foot">
+    <button class="btn btn-ghost" onclick="closeAll()">Cancel</button>
+    <button class="btn" id="clientSaveBtn" onclick="saveClient()">Save client</button>
+  </div>
+</div>
+
+<!-- ═══ SESSION MODAL ═══════════════════════ -->
+<div class="modal" id="sessionModal">
+  <div class="modal-head"><h2>Log session</h2></div>
+  <div class="modal-body">
+    <div class="form-row">
+      <div class="field"><label>Date</label><input id="sDate" type="date" /></div>
+      <div class="field"><label>Session number</label><input id="sNumber" type="number" min="1" placeholder="e.g. 3" /></div>
+    </div>
+    <div class="field"><label>Notes / takeaways</label><textarea id="sNotes"></textarea></div>
+    <div class="field"><label>Next steps</label><textarea id="sNext" style="min-height:56px;"></textarea></div>
+  </div>
+  <div class="modal-foot">
+    <button class="btn btn-ghost" onclick="closeAll()">Cancel</button>
+    <button class="btn" onclick="saveSession()">Save session</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ═══════════════════════════════════════════
+   CONFIG — paste your Supabase project values.
+   Supabase dashboard → Project Settings → API
+═══════════════════════════════════════════ */
+const SUPABASE_URL = "https://xbcyepwlprybucathjxh.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhiY3llcHdscHJ5YnVjYXRoanhoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIzNjg4NDQsImV4cCI6MjA5Nzk0NDg0NH0.8nEUjPELY2dBcMGRm-5TmVgwi7oUyi2O-rqeHhzsC7Q";
+
+const db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+/* ── STATE ── */
+let clients = [];
+let sessions = [];
+let currentClient = null;
+const STATUSES = ["lead","discovery","active","completed"];
+const STATUS_LABELS = {lead:"Lead",discovery:"Discovery",active:"Active",completed:"Completed",lost:"Lost"};
+
+/* ── AUTH ── */
+async function init(){
+  const { data:{ session } } = await db.auth.getSession();
+  if(session){ showApp(); } else { showLogin(); }
+}
+function showLogin(){ document.getElementById("loginView").style.display="flex"; document.getElementById("appView").classList.remove("active"); }
+async function showApp(){
+  document.getElementById("loginView").style.display="none";
+  document.getElementById("appView").classList.add("active");
+  document.getElementById("todayLine").textContent = new Date().toLocaleDateString("en-US",{weekday:"long",month:"long",day:"numeric",year:"numeric"});
+  await loadData();
+}
+document.getElementById("loginBtn").addEventListener("click", async ()=>{
+  const email = document.getElementById("loginEmail").value.trim();
+  const password = document.getElementById("loginPassword").value;
+  const err = document.getElementById("loginError");
+  err.textContent = "";
+  const { error } = await db.auth.signInWithPassword({ email, password });
+  if(error){ err.textContent = error.message; return; }
+  showApp();
+});
+document.getElementById("loginPassword").addEventListener("keydown", e=>{ if(e.key==="Enter") document.getElementById("loginBtn").click(); });
+document.getElementById("logoutBtn").addEventListener("click", async ()=>{ await db.auth.signOut(); location.reload(); });
+
+/* ── DATA ── */
+async function loadData(){
+  const [c, s] = await Promise.all([
+    db.from("clients").select("*").order("created_at",{ascending:false}),
+    db.from("sessions").select("*").order("session_date",{ascending:false})
+  ]);
+  if(c.error||s.error){ toast("Could not load data — check Supabase config"); console.error(c.error||s.error); return; }
+  clients = c.data; sessions = s.data;
+  renderAll();
+}
+function renderAll(){ renderDashboard(); renderBoard(); renderClients(); }
+
+/* ── DASHBOARD ── */
+function renderDashboard(){
+  const now = new Date();
+  const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().slice(0,10);
+  document.getElementById("statActive").textContent = clients.filter(c=>c.status==="active").length;
+  document.getElementById("statLeads").textContent = clients.filter(c=>c.status==="lead"||c.status==="discovery").length;
+  document.getElementById("statSessions").textContent = sessions.filter(s=>s.session_date>=monthStart).length;
+  document.getElementById("statTotal").textContent = clients.length;
+
+  const recent = sessions.slice(0,6);
+  const rs = document.getElementById("recentSessions");
+  if(recent.length===0){ rs.innerHTML = '<p class="empty-note">No sessions logged yet. Open a client and add your first one.</p>'; }
+  else {
+    rs.innerHTML = recent.map(s=>{
+      const cl = clients.find(c=>c.id===s.client_id);
+      return `<div class="recent-row"><span><span class="recent-name">${esc(cl?cl.name:"—")}</span>${s.session_number?` <span class="td-muted">· session ${s.session_number}</span>`:""}</span><span class="recent-meta">${fmtDate(s.session_date)}</span></div>`;
+    }).join("");
+  }
+
+  const ps = document.getElementById("pipeSummary");
+  ps.innerHTML = ["lead","discovery","active","completed","lost"].map(st=>{
+    const n = clients.filter(c=>c.status===st).length;
+    return `<div class="pipe-sum-row"><span class="badge ${st}">${STATUS_LABELS[st]}</span><span class="pipe-count">${n}</span></div>`;
+  }).join("");
+}
+
+/* ── PIPELINE BOARD ── */
+function renderBoard(){
+  const board = document.getElementById("board");
+  board.innerHTML = STATUSES.map(st=>{
+    const group = clients.filter(c=>c.status===st);
+    const cards = group.map(c=>`
+      <div class="board-card" onclick="openDrawer('${c.id}')">
+        <div class="bc-name">${esc(c.name)}</div>
+        <div class="bc-meta">${esc(c.company_role||c.source||"")}</div>
+        ${c.package?`<div class="bc-meta" style="color:var(--navy);margin-top:4px;">${esc(c.package)}</div>`:""}
+      </div>`).join("");
+    return `<div class="board-col">
+      <div class="board-col-head"><span>${STATUS_LABELS[st]}</span><span class="board-col-count">${group.length}</span></div>
+      ${cards || '<p class="empty-note" style="padding:8px 0;">—</p>'}
+    </div>`;
+  }).join("");
+}
+
+/* ── CLIENTS TABLE ── */
+function renderClients(){
+  const q = document.getElementById("searchInput").value.toLowerCase();
+  const f = document.getElementById("statusFilter").value;
+  const rows = clients.filter(c=>{
+    const matchQ = !q || [c.name,c.email,c.company_role,c.source].some(v=>v&&v.toLowerCase().includes(q));
+    const matchF = !f || c.status===f;
+    return matchQ && matchF;
+  });
+  const tb = document.getElementById("clientRows");
+  tb.innerHTML = rows.map(c=>`
+    <tr onclick="openDrawer('${c.id}')">
+      <td class="td-name">${esc(c.name)}<div class="td-muted">${esc(c.company_role||"")}</div></td>
+      <td><span class="badge ${c.status}">${STATUS_LABELS[c.status]||c.status}</span></td>
+      <td>${esc(c.package||"—")}</td>
+      <td class="td-muted">${esc(c.email||c.phone||"—")}</td>
+      <td class="td-muted">${fmtDate(c.created_at)}</td>
+    </tr>`).join("");
+  document.getElementById("clientsEmpty").style.display = rows.length? "none":"block";
+}
+document.getElementById("searchInput").addEventListener("input", renderClients);
+document.getElementById("statusFilter").addEventListener("change", renderClients);
+
+/* ── DRAWER ── */
+function openDrawer(id){
+  currentClient = clients.find(c=>c.id===id);
+  if(!currentClient) return;
+  const c = currentClient;
+  document.getElementById("drawerName").textContent = c.name;
+  document.getElementById("drawerDetails").innerHTML = [
+    ["Status", `<span class="badge ${c.status}">${STATUS_LABELS[c.status]}</span>`],
+    ["Package", esc(c.package||"—")],
+    ["Email", c.email?`<a href="mailto:${esc(c.email)}" style="color:var(--navy);">${esc(c.email)}</a>`:"—"],
+    ["Phone", esc(c.phone||"—")],
+    ["Company / Role", esc(c.company_role||"—")],
+    ["Source", esc(c.source||"—")]
+  ].map(([l,v])=>`<div class="detail-item"><div class="dl">${l}</div><div class="dv">${v}</div></div>`).join("");
+  document.getElementById("drawerNotesWrap").innerHTML = c.notes? `<div class="detail-notes">${esc(c.notes)}</div>` : "";
+  renderSessionList();
+  document.getElementById("overlay").classList.add("open");
+  document.getElementById("drawer").classList.add("open");
+}
+function renderSessionList(){
+  const list = sessions.filter(s=>s.client_id===currentClient.id);
+  const el = document.getElementById("sessionList");
+  el.innerHTML = list.length? list.map(s=>`
+    <div class="sess-item">
+      <div class="sess-top"><span class="sess-date">${fmtDate(s.session_date)}</span>${s.session_number?`<span class="sess-num">Session ${s.session_number}</span>`:""}</div>
+      ${s.notes?`<div class="sess-notes">${esc(s.notes)}</div>`:""}
+      ${s.next_steps?`<div class="sess-next">Next: ${esc(s.next_steps)}</div>`:""}
+    </div>`).join("") : '<p class="empty-note">No sessions logged for this client yet.</p>';
+}
+
+/* ── CLIENT MODAL ── */
+let editingId = null;
+function openClientModal(existing){
+  editingId = existing? existing.id : null;
+  document.getElementById("clientModalTitle").textContent = existing? "Edit client" : "Add client";
+  document.getElementById("cName").value = existing?.name||"";
+  document.getElementById("cEmail").value = existing?.email||"";
+  document.getElementById("cPhone").value = existing?.phone||"";
+  document.getElementById("cCompany").value = existing?.company_role||"";
+  document.getElementById("cStatus").value = existing?.status||"lead";
+  document.getElementById("cPackage").value = existing?.package||"";
+  document.getElementById("cSource").value = existing?.source||"";
+  document.getElementById("cNotes").value = existing?.notes||"";
+  document.getElementById("drawer").classList.remove("open");
+  document.getElementById("overlay").classList.add("open");
+  document.getElementById("clientModal").classList.add("open");
+}
+async function saveClient(){
+  const payload = {
+    name: document.getElementById("cName").value.trim(),
+    email: document.getElementById("cEmail").value.trim()||null,
+    phone: document.getElementById("cPhone").value.trim()||null,
+    company_role: document.getElementById("cCompany").value.trim()||null,
+    status: document.getElementById("cStatus").value,
+    package: document.getElementById("cPackage").value||null,
+    source: document.getElementById("cSource").value.trim()||null,
+    notes: document.getElementById("cNotes").value.trim()||null
+  };
+  if(!payload.name){ toast("Name is required"); return; }
+  const res = editingId
+    ? await db.from("clients").update(payload).eq("id", editingId)
+    : await db.from("clients").insert(payload);
+  if(res.error){ toast("Save failed — see console"); console.error(res.error); return; }
+  toast(editingId? "Client updated" : "Client added");
+  closeAll();
+  await loadData();
+}
+async function deleteClient(){
+  if(!currentClient) return;
+  if(!confirm(`Delete ${currentClient.name} and all their sessions? This cannot be undone.`)) return;
+  const res = await db.from("clients").delete().eq("id", currentClient.id);
+  if(res.error){ toast("Delete failed"); console.error(res.error); return; }
+  toast("Client deleted");
+  closeAll();
+  await loadData();
+}
+
+/* ── SESSION MODAL ── */
+function openSessionModal(){
+  document.getElementById("sDate").value = new Date().toISOString().slice(0,10);
+  const count = sessions.filter(s=>s.client_id===currentClient.id).length;
+  document.getElementById("sNumber").value = count+1;
+  document.getElementById("sNotes").value = "";
+  document.getElementById("sNext").value = "";
+  document.getElementById("drawer").classList.remove("open");
+  document.getElementById("sessionModal").classList.add("open");
+}
+async function saveSession(){
+  const payload = {
+    client_id: currentClient.id,
+    session_date: document.getElementById("sDate").value,
+    session_number: parseInt(document.getElementById("sNumber").value)||null,
+    notes: document.getElementById("sNotes").value.trim()||null,
+    next_steps: document.getElementById("sNext").value.trim()||null
+  };
+  const res = await db.from("sessions").insert(payload);
+  if(res.error){ toast("Save failed — see console"); console.error(res.error); return; }
+  toast("Session logged");
+  closeAll();
+  await loadData();
+}
+
+/* ── NAV & UTIL ── */
+document.querySelectorAll(".side-nav button").forEach(btn=>{
+  btn.addEventListener("click", ()=>{
+    document.querySelectorAll(".side-nav button").forEach(b=>b.classList.remove("active"));
+    btn.classList.add("active");
+    ["dashboard","pipeline","clients"].forEach(v=>{
+      document.getElementById("view-"+v).style.display = v===btn.dataset.view? "block":"none";
+    });
+  });
+});
+function closeAll(){
+  ["drawer","clientModal","sessionModal"].forEach(id=>document.getElementById(id).classList.remove("open"));
+  document.getElementById("overlay").classList.remove("open");
+  currentClient = null;
+}
+function toast(msg){
+  const t = document.getElementById("toast");
+  t.textContent = msg; t.classList.add("show");
+  setTimeout(()=>t.classList.remove("show"), 2400);
+}
+function esc(s){ return (s??"").toString().replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+function fmtDate(d){ if(!d) return "—"; return new Date(d).toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric"}); }
+
+init();
+</script>
+</body>
+</html>
