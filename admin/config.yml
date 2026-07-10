@@ -4,8 +4,6 @@ backend:
 
 media_folder: "images"
 public_folder: "/images"
-media_library:
-  name: default
 
 collections:
   - name: "site"
@@ -39,6 +37,7 @@ collections:
                 name: "credentials"
                 widget: "list"
                 field: { label: "Credential", name: "credential", widget: "string" }
+              - { label: "Photo / Headshot", name: "photo", widget: "image", required: false, hint: "Upload a JPG or PNG under 5 MB. iPhone tip: HEIC/Live Photos won't display on the web — open the photo, tap Share, and 'Save as JPEG' first (or send it a smaller size). Leave as-is to keep the current photo." }
 
           - label: "Pricing Packages"
             name: "pricing"
