@@ -1,0 +1,69 @@
+name: CMS /admin health check
+
+# Daily: load the live /admin in a headless browser and confirm it renders
+# without a config/version error. If it's broken, open a GitHub issue (which
+# emails you) so YOU find out before Francis does.
+
+on:
+  schedule:
+    - cron: "0 8 * * *" # daily 08:00 UTC
+  workflow_dispatch: {}
+
+permissions:
+  issues: write
+
+jobs:
+  healthcheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install Playwright (Chromium)
+        run: npm i -D playwright@latest && npx playwright install --with-deps chromium
+
+      - name: Load /admin and assert no config error
+        run: |
+          cat > check.mjs <<'JS'
+          import { chromium } from 'playwright';
+          const URL = 'https://neuroviscmt.netlify.app/admin/';
+          const browser = await chromium.launch();
+          const page = await browser.newPage();
+          const resp = await page.goto(URL, { waitUntil: 'networkidle', timeout: 45000 });
+          await page.waitForTimeout(6000); // let the CMS bundle boot + fetch config
+          const body = (await page.textContent('body')) || '';
+          const status = resp ? resp.status() : 0;
+          await browser.close();
+          const broken =
+            /Error loading the CMS configuration|Config Errors|Missing external media library/i.test(body);
+          if (broken || status >= 400) {
+            console.error(`ADMIN BROKEN — http=${status}\n--- body snippet ---\n${body.slice(0, 400)}`);
+            process.exit(1);
+          }
+          console.log(`admin OK — http=${status}`);
+          JS
+          node check.mjs
+
+      - name: Open an issue if the check failed
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const title = 'CMS /admin health check failed';
+            const { data: open } = await github.rest.issues.listForRepo({
+              owner: context.repo.owner, repo: context.repo.repo, state: 'open'
+            });
+            if (open.some(i => i.title === title)) return; // don't spam duplicates
+            const run = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+            await github.rest.issues.create({
+              owner: context.repo.owner, repo: context.repo.repo, title,
+              body: [
+                'The scheduled check could not load **https://neuroviscmt.netlify.app/admin/** without errors.',
+                '',
+                `Failed run: ${run}`,
+                '',
+                'Likely causes: a bad CMS version bump, a `config.yml` error, or a Netlify Identity issue.',
+                'Reproduce by opening `/admin/` in a browser. Close this issue once resolved.'
+              ].join('\n')
+            });

@@ -1,0 +1,56 @@
+name: Check for Decap CMS updates
+
+# Weekly: if a newer Decap CMS release exists, open a PR bumping the pinned
+# version in admin/index.html. You review + merge (one click) -> Netlify deploys.
+# Nothing untested reaches the live /admin.
+
+on:
+  schedule:
+    - cron: "0 9 * * 1" # Mondays 09:00 UTC
+  workflow_dispatch: {} # allow manual runs from the Actions tab
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  check-update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Determine current vs latest version
+        id: v
+        run: |
+          set -euo pipefail
+          CURRENT=$(grep -oE 'decap-cms@[0-9]+\.[0-9]+\.[0-9]+' admin/index.html | head -1 | cut -d@ -f2)
+          LATEST=$(curl -fsSL https://registry.npmjs.org/decap-cms/latest | python3 -c "import sys,json;print(json.load(sys.stdin)['version'])")
+          if [ -z "$CURRENT" ]; then echo "Could not read current version from admin/index.html"; exit 1; fi
+          echo "current=$CURRENT" >> "$GITHUB_OUTPUT"
+          echo "latest=$LATEST"  >> "$GITHUB_OUTPUT"
+          echo "Current: $CURRENT | Latest: $LATEST"
+
+      - name: Bump admin/index.html if a newer version exists
+        if: steps.v.outputs.current != steps.v.outputs.latest
+        run: |
+          sed -i "s|decap-cms@${{ steps.v.outputs.current }}|decap-cms@${{ steps.v.outputs.latest }}|g" admin/index.html
+          grep -n "decap-cms@" admin/index.html
+
+      - name: Open / update pull request
+        if: steps.v.outputs.current != steps.v.outputs.latest
+        uses: peter-evans/create-pull-request@v6
+        with:
+          commit-message: "Bump Decap CMS ${{ steps.v.outputs.current }} -> ${{ steps.v.outputs.latest }}"
+          branch: "chore/decap-${{ steps.v.outputs.latest }}"
+          delete-branch: true
+          title: "Update Decap CMS to ${{ steps.v.outputs.latest }}"
+          body: |
+            An automated weekly check found a newer Decap CMS release.
+
+            - **Current:** `${{ steps.v.outputs.current }}`
+            - **Latest:** `${{ steps.v.outputs.latest }}`
+
+            Merging this deploys it to `/admin`. **After merging**, hard-refresh
+            `https://neuroviscmt.netlify.app/admin/` and confirm the login screen loads.
+
+            Release notes: https://github.com/decaporg/decap-cms/releases
