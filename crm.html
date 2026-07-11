@@ -80,6 +80,26 @@
   .pipe-sum-row:last-child{border-bottom:none;}
   .pipe-count{font-family:var(--serif);font-size:1.2rem;color:var(--navy);}
 
+  /* ── INSIGHTS ──────────────────────────── */
+  .rev-head{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px;margin-bottom:6px;}
+  .rev-num{font-family:var(--serif);font-size:2.1rem;color:var(--ink);line-height:1;}
+  .rev-sub{font-size:.8rem;color:var(--muted);}
+  .rev-sub b{color:var(--green);font-weight:700;}
+  .rev-chart{width:100%;height:auto;display:block;margin-top:12px;}
+  .funnel-row{margin-bottom:12px;}
+  .funnel-row:last-child{margin-bottom:0;}
+  .funnel-top{display:flex;justify-content:space-between;align-items:baseline;font-size:.78rem;margin-bottom:4px;}
+  .funnel-top b{color:var(--ink);font-weight:600;}
+  .funnel-top span{color:var(--muted);}
+  .funnel-track{background:var(--warm);border-radius:3px;height:14px;overflow:hidden;}
+  .funnel-fill{height:100%;background:var(--navy);border-radius:3px;min-width:2px;}
+  .attn-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--warm);font-size:.88rem;cursor:pointer;}
+  .attn-row:last-child{border-bottom:none;}
+  .attn-row:hover .attn-name{color:var(--navy);}
+  .attn-dot{width:8px;height:8px;border-radius:50%;flex:none;}
+  .attn-name{font-weight:600;color:var(--ink);}
+  .attn-why{color:var(--muted);font-size:.8rem;margin-left:auto;text-align:right;white-space:nowrap;}
+
   /* ── STATUS BADGES ─────────────────────── */
   .badge{display:inline-block;font-size:.7rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:3px 10px;border-radius:50px;border:1px solid;}
   .badge.lead{color:var(--gold);border-color:var(--gold);background:rgba(181,135,58,.08);}
@@ -214,11 +234,21 @@
       </div>
       <div class="dash-grid">
         <div class="card">
+          <h3>Revenue</h3>
+          <div id="revenueCard"></div>
+        </div>
+        <div class="card">
+          <h3>Needs attention</h3>
+          <div id="attentionList"></div>
+        </div>
+      </div>
+      <div class="dash-grid" style="margin-top:20px;">
+        <div class="card">
           <h3>Recent sessions</h3>
           <div id="recentSessions"><p class="empty-note">No sessions logged yet. Open a client and add your first one.</p></div>
         </div>
         <div class="card">
-          <h3>Pipeline summary</h3>
+          <h3>Pipeline funnel</h3>
           <div id="pipeSummary"></div>
         </div>
       </div>
@@ -361,6 +391,11 @@ let currentClient = null;
 const STATUSES = ["lead","discovery","active","completed"];
 const STATUS_LABELS = {lead:"Lead",discovery:"Discovery",active:"Active",completed:"Completed",lost:"Lost"};
 
+/* Insights config — keep in sync with site pricing (content.json).
+   "Custom" packages are excluded from revenue math (unknown value). */
+const PACKAGE_VALUES = {"3 Sessions":1499, "6 Sessions":2699, "12 Sessions":4799, "Leadership Training":1799};
+const PACKAGE_SESSIONS = {"3 Sessions":3, "6 Sessions":6, "12 Sessions":12};
+
 /* ── AUTH ── */
 async function init(){
   const { data:{ session } } = await db.auth.getSession();
@@ -416,11 +451,97 @@ function renderDashboard(){
     }).join("");
   }
 
-  const ps = document.getElementById("pipeSummary");
-  ps.innerHTML = ["lead","discovery","active","completed","lost"].map(st=>{
-    const n = clients.filter(c=>c.status===st).length;
-    return `<div class="pipe-sum-row"><span class="badge ${st}">${STATUS_LABELS[st]}</span><span class="pipe-count">${n}</span></div>`;
+  renderRevenue();
+  renderFunnel();
+  renderAttention();
+}
+
+/* ── INSIGHTS: REVENUE ── */
+function fmtMoney(n){ return "$" + Math.round(n).toLocaleString("en-US"); }
+function clientValue(c){ return PACKAGE_VALUES[c.package] || 0; }
+function renderRevenue(){
+  const el = document.getElementById("revenueCard");
+  const booked = clients.filter(c=>(c.status==="active"||c.status==="completed") && clientValue(c)>0);
+  const customN = clients.filter(c=>(c.status==="active"||c.status==="completed") && c.package==="Custom").length;
+  const total = booked.reduce((t,c)=>t+clientValue(c),0);
+  const now = new Date();
+  const ym = d => { const x=new Date(d); return x.getFullYear()*12+x.getMonth(); };
+  const thisM = booked.filter(c=>ym(c.created_at)===ym(now)).reduce((t,c)=>t+clientValue(c),0);
+
+  // last-6-months buckets (by month the client was added)
+  const buckets=[];
+  for(let i=5;i>=0;i--){
+    const d=new Date(now.getFullYear(), now.getMonth()-i, 1);
+    buckets.push({key:d.getFullYear()*12+d.getMonth(), label:d.toLocaleDateString("en-US",{month:"short"}), val:0});
+  }
+  booked.forEach(c=>{ const k=ym(c.created_at); const b=buckets.find(b=>b.key===k); if(b) b.val+=clientValue(c); });
+  const max = Math.max(...buckets.map(b=>b.val), 1);
+
+  const W=320, H=110, base=86, bw=34, gap=(W-6*bw)/7;
+  const bars = buckets.map((b,i)=>{
+    const h = b.val? Math.max(4, Math.round(b.val/max*62)) : 2;
+    const x = gap + i*(bw+gap);
+    const fill = i===5? "var(--gold)" : "var(--navy)";
+    const valLabel = b.val? `<text x="${x+bw/2}" y="${base-h-6}" text-anchor="middle" font-size="10" fill="#777">${b.val>=1000? "$"+(b.val/1000).toFixed(1).replace(/\.0$/,"")+"k" : "$"+b.val}</text>` : "";
+    return `${valLabel}<rect x="${x}" y="${base-h}" width="${bw}" height="${h}" rx="2" fill="${fill}" opacity="${b.val?1:.25}"></rect>
+      <text x="${x+bw/2}" y="${base+16}" text-anchor="middle" font-size="10" fill="#999">${b.label}</text>`;
   }).join("");
+
+  el.innerHTML = booked.length===0 && customN===0
+    ? '<p class="empty-note">Revenue appears here once a client with a package is marked Active or Completed.</p>'
+    : `<div class="rev-head"><div class="rev-num">${fmtMoney(total)}</div><div class="rev-sub"><b>${fmtMoney(thisM)}</b> booked this month</div></div>
+       <div class="rev-sub">${booked.length} paying client${booked.length===1?"":"s"}${customN?` · +${customN} custom (not counted)`:""} · by month added</div>
+       <svg class="rev-chart" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Revenue by month">${bars}</svg>`;
+}
+
+/* ── INSIGHTS: FUNNEL ── */
+function renderFunnel(){
+  const ranks = {lead:0, discovery:1, active:2, completed:3};
+  // "reached at least this stage" — lost clients count only as reached Lead
+  const effRank = c => c.status==="lost"? 0 : (ranks[c.status] ?? 0);
+  const reached = STATUSES.map((st,i)=>clients.filter(c=>effRank(c)>=i).length);
+  const lost = clients.filter(c=>c.status==="lost").length;
+  const ps = document.getElementById("pipeSummary");
+  if(clients.length===0){ ps.innerHTML='<p class="empty-note">Add clients to see your funnel.</p>'; return; }
+  ps.innerHTML = STATUSES.map((st,i)=>{
+    const pct = i===0? 100 : (reached[i-1]? Math.round(reached[i]/reached[i-1]*100) : 0);
+    const width = reached[0]? Math.max(2, Math.round(reached[i]/reached[0]*100)) : 2;
+    return `<div class="funnel-row">
+      <div class="funnel-top"><b>${STATUS_LABELS[st]}</b><span>${reached[i]}${i>0?` · ${pct}% from ${STATUS_LABELS[STATUSES[i-1]]}`:""}</span></div>
+      <div class="funnel-track"><div class="funnel-fill" style="width:${width}%;"></div></div>
+    </div>`;
+  }).join("") + (lost? `<div class="funnel-top" style="margin-top:10px;"><span class="badge lost">Lost</span><span>${lost}</span></div>`:"");
+}
+
+/* ── INSIGHTS: NEEDS ATTENTION ── */
+function renderAttention(){
+  const el = document.getElementById("attentionList");
+  const now = Date.now();
+  const days = d => Math.floor((now - new Date(d).getTime())/86400000);
+  const items = [];
+  clients.forEach(c=>{
+    const cSessions = sessions.filter(s=>s.client_id===c.id);
+    if(c.status==="active"){
+      const total = PACKAGE_SESSIONS[c.package];
+      if(total && cSessions.length>=total){ items.push({c, why:"Package complete — renewal talk", dot:"var(--green)", prio:0}); return; }
+      if(total && cSessions.length===total-1){ items.push({c, why:"1 session left — renewal talk", dot:"var(--green)", prio:0}); return; }
+      if(cSessions.length===0){ items.push({c, why:`Active, no sessions yet (${days(c.created_at)}d)`, dot:"var(--red)", prio:1}); return; }
+      const last = Math.min(...cSessions.map(s=>days(s.session_date)));
+      if(last>=14){ items.push({c, why:`No session in ${last}d`, dot:"var(--red)", prio:1}); }
+    } else if(c.status==="lead" || c.status==="discovery"){
+      const age = days(c.created_at);
+      if(age>=7){ items.push({c, why:`${STATUS_LABELS[c.status]} waiting ${age}d`, dot:"var(--gold)", prio:2}); }
+    }
+  });
+  items.sort((a,b)=>a.prio-b.prio);
+  el.innerHTML = items.length===0
+    ? '<p class="empty-note">All caught up — nothing needs attention.</p>'
+    : items.slice(0,7).map(({c,why,dot})=>`
+      <div class="attn-row" onclick="openDrawer('${c.id}')">
+        <span class="attn-dot" style="background:${dot};"></span>
+        <span class="attn-name">${esc(c.name)}</span>
+        <span class="attn-why">${why}</span>
+      </div>`).join("");
 }
 
 /* ── PIPELINE BOARD ── */
