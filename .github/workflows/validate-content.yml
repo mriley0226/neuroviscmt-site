@@ -1,0 +1,25 @@
+name: Validate content
+
+# Runs the duplicate-content guardrail on every push and PR to main.
+# Decap CMS commits straight to main when Frank clicks "Publish", so this puts
+# a visible red X on the offending commit (and emails whoever is watching the
+# repo). The Netlify build command is what actually blocks the deploy; this is
+# the fast, human-visible signal and covers any future PR-based workflow.
+
+on:
+  push:
+    branches: [main]
+    paths: ['content.json', 'scripts/validate-content.js']
+  pull_request:
+    paths: ['content.json', 'scripts/validate-content.js']
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Check content.json for duplicates
+        run: node scripts/validate-content.js

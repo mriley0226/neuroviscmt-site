@@ -1,0 +1,9 @@
+{
+  "name": "neuroviscmt-site",
+  "version": "1.0.0",
+  "private": true,
+  "description": "NeuroVis CMT static site with content-duplicate guardrails.",
+  "scripts": {
+    "validate": "node scripts/validate-content.js"
+  }
+}

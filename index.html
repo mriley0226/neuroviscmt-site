@@ -426,11 +426,29 @@
 
 <script>
 // ── LOAD CONTENT FROM content.json AND RENDER ──────────
-fetch('content.json')
+// cache:'no-store' + a per-load cache-buster guarantee that a freshly published
+// content.json is always fetched — so an edit in the CMS shows up immediately and
+// a stale (possibly duplicated) copy is never served from browser or CDN cache.
+fetch('content.json?v=' + Date.now(), { cache: 'no-store' })
   .then(r => r.json())
   .then(c => {
     const s = c.site;
     const a = c.about;
+
+    // Render-time defense. The containers below ship with static fallback content
+    // (so the page still shows something if this fetch fails). On success we must
+    // CLEAR each container before injecting CMS content — otherwise CMS items are
+    // appended on top of the static ones and every entry renders twice. uniqBy()
+    // additionally drops any duplicate that exists within content.json itself.
+    const uniqBy = (list, keyFn) => {
+      const seen = new Set();
+      return (Array.isArray(list) ? list : []).filter(item => {
+        const k = String(keyFn(item)).replace(/\s+/g, ' ').trim().toLowerCase();
+        if (seen.has(k)) return false;
+        seen.add(k);
+        return true;
+      });
+    };
 
     // Booking links
     ['nav-booking','hero-booking','about-cta','cta-booking','footer-booking','mobile-booking'].forEach(id => {
@@ -461,7 +479,8 @@ fetch('content.json')
 
     // Credentials
     const cl = document.getElementById('credentials-list');
-    a.credentials.forEach(cr => {
+    cl.innerHTML = '';
+    uniqBy(a.credentials, cr => cr).forEach(cr => {
       const li = document.createElement('li');
       li.innerHTML = '<span class="cred-marker"></span>' + cr;
       cl.appendChild(li);
@@ -469,7 +488,8 @@ fetch('content.json')
 
     // Pricing
     const pg = document.getElementById('pricing-grid');
-    c.pricing.forEach(p => {
+    pg.innerHTML = '';
+    uniqBy(c.pricing, p => p.sessions).forEach(p => {
       const div = document.createElement('div');
       div.className = 'price-card' + (p.featured ? ' featured' : '');
       if(!p.featured && p.sessions === 'Flexible') div.style.background = '#f4f0eb';
@@ -484,7 +504,8 @@ fetch('content.json')
     // Testimonials
     const tg = document.getElementById('testi-grid');
     document.getElementById('testimonials').style.display = (c.testimonials && c.testimonials.length) ? 'block' : 'none';
-    c.testimonials.forEach(t => {
+    tg.innerHTML = '';
+    uniqBy(c.testimonials, t => t.name + '|' + t.quote).forEach(t => {
       const div = document.createElement('div');
       div.className = 'testi-card';
       div.innerHTML = '<div class="stars">★★★★★</div><blockquote>"' + t.quote + '"</blockquote><div class="testi-author"><div class="testi-avatar">' + t.initial + '</div><div><div class="testi-name">' + t.name + '</div><div class="testi-role">' + t.role + '</div></div></div>';
@@ -493,7 +514,8 @@ fetch('content.json')
 
     // FAQ
     const fl = document.getElementById('faq-list');
-    c.faq.forEach(f => {
+    fl.innerHTML = '';
+    uniqBy(c.faq, f => f.question).forEach(f => {
       const div = document.createElement('div');
       div.className = 'faq-item';
       div.setAttribute('itemscope','');
