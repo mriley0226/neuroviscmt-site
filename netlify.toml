@@ -1,0 +1,25 @@
+# Netlify build config for the NeuroVis CMT site.
+#
+# The site is static (no bundler), so the only "build" step is the content
+# guardrail. If validate-content.js finds duplicate testimonials/pricing/FAQ/
+# etc. in content.json it exits non-zero, the build FAILS, and Netlify keeps
+# the previous (clean) version live. This is what actually stops a duplicate
+# created in the CMS from reaching the live site.
+#
+# IMPORTANT: `publish` must match the folder that is currently served as the
+# site root. This repo serves index.html / content.json from the repo root, so
+# publish = ".". If your Netlify "Publish directory" is set to something else in
+# the UI, make them match (this file wins over the UI setting).
+
+[build]
+  command = "node scripts/validate-content.js"
+  publish = "."
+
+# Never let content.json be served stale. Netlify does atomic deploys and purges
+# its CDN on every publish, so "must-revalidate" means browsers/CDN always check
+# for the newest version. This is the caching half of "don't show old/duplicate
+# content" — the render-time dedupe in index.html is the other half.
+[[headers]]
+  for = "/content.json"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
