@@ -306,7 +306,7 @@
       <p class="label" style="margin-bottom:8px;">Coaching Packages</p>
       <h3>Choose the depth that fits your goals</h3>
     </div>
-    <div class="pricing-grid fade-up" id="pricing-grid"><div class="price-card"><div class="price-sessions">3 Sessions</div><div class="price-amount">$1,499</div><div class="price-timeframe">over 6 weeks</div></div><div class="price-card featured"><div class="price-sessions">6 Sessions</div><div class="price-amount">$2,699</div><div class="price-timeframe">over 12 weeks</div></div><div class="price-card"><div class="price-sessions">12 Sessions</div><div class="price-amount">$4,799</div><div class="price-timeframe">over 24 weeks</div></div><div class="price-card" style="background:#f4f0eb;"><div class="price-sessions">Flexible</div><div class="price-amount">Custom</div><div class="price-timeframe">tailored to you</div></div></div>
+    <div class="pricing-grid fade-up" id="pricing-grid"><a class="price-card" href="https://neuroviscmt.com/schedule-a-session/" target="_blank" rel="noopener" style="text-decoration:none;"><div class="price-sessions">3 Sessions</div><div class="price-amount">$1,499</div><div class="price-timeframe">over 6 weeks</div></a><a class="price-card featured" href="https://neuroviscmt.com/schedule-a-session/" target="_blank" rel="noopener" style="text-decoration:none;"><div class="price-sessions">6 Sessions</div><div class="price-amount">$2,699</div><div class="price-timeframe">over 12 weeks</div></a><a class="price-card" href="https://neuroviscmt.com/schedule-a-session/" target="_blank" rel="noopener" style="text-decoration:none;"><div class="price-sessions">12 Sessions</div><div class="price-amount">$4,799</div><div class="price-timeframe">over 24 weeks</div></a><a class="price-card" href="https://neuroviscmt.com/schedule-a-session/" target="_blank" rel="noopener" style="text-decoration:none;background:#f4f0eb;"><div class="price-sessions">Flexible</div><div class="price-amount">Custom</div><div class="price-timeframe">tailored to you</div></a></div>
     <p class="pricing-note">* Time periods are flexible and tailored to your individual needs.</p>
     <div class="leadership-card fade-up" id="leadership-card"><div><h4>Leadership Training for Teams</h4><p>Brain-based leadership development for groups of up to 25 participants. Ideal for organizational training days, off-sites, and professional development programs.</p></div><div><div class="leadership-price">$1,799 <span>/ day</span></div><a href="https://neuroviscmt.com/schedule-a-session/" target="_blank" rel="noopener" class="btn-outline" style="margin-top:12px;display:inline-block;font-size:.84rem;padding:10px 20px;">Inquire</a></div></div>
   </div>
@@ -490,8 +490,18 @@ fetch('content.json?v=' + Date.now(), { cache: 'no-store' })
     const pg = document.getElementById('pricing-grid');
     pg.innerHTML = '';
     uniqBy(c.pricing, p => p.sessions).forEach(p => {
-      const div = document.createElement('div');
+      // Each package card is a link to the booking page. The card already has a
+      // hover "lift", so making the whole card clickable matches that affordance
+      // and the Leadership card's "Inquire" button. Using <a> keeps it keyboard-
+      // accessible; the inner .price-* rules set their own colors, so we only need
+      // to strip the default link underline.
+      const div = document.createElement('a');
       div.className = 'price-card' + (p.featured ? ' featured' : '');
+      div.href = s.booking_url;
+      div.target = '_blank';
+      div.rel = 'noopener';
+      div.style.textDecoration = 'none';
+      div.setAttribute('aria-label', 'Book ' + p.sessions + ' — ' + p.price);
       if(!p.featured && p.sessions === 'Flexible') div.style.background = '#f4f0eb';
       div.innerHTML = '<div class="price-sessions">' + p.sessions + '</div><div class="price-amount">' + p.price + '</div><div class="price-timeframe">' + p.timeframe + '</div>';
       pg.appendChild(div);
